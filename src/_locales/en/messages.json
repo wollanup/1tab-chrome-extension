@@ -9,7 +9,7 @@
     "message": "Prevent Duplicate Tabs"
   },
   "compareMode": {
-    "message": "Comparison Mode"
+    "message": "Detection Mode"
   },
   "modeExact": {
     "message": "Exact (origin+path+query)"
@@ -37,6 +37,17 @@
   },
   "title": {
     "message": "1Tab - Prevent Duplicate Tabs"
+  },
+  "dupesLabel_one": {
+    "message": "$1 duplicate prevented",
+    "description": "Label below the gauge for 1 duplicate prevented (English)."
+  },
+  "dupesLabel_other": {
+    "message": "$1 duplicates prevented",
+    "description": "Label below the gauge for 0 or multiple duplicates prevented (English)."
+  },
+  "totalTabsLabel": {
+    "message": "Total opened tabs: $1",
+    "description": "Label showing the total number of opened tabs."
   }
 }
-

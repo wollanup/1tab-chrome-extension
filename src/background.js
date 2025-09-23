@@ -6,6 +6,10 @@ const DEFAULTS = {
 };
 const MAX_LOGS = 200;
 
+// --- Counters for stats ---
+let totalTabsOpened = 0;
+let duplicateTabsPrevented = 0;
+
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.local.get(['matchMode', 'debug'], (s) => {
         const init = {};
@@ -72,6 +76,7 @@ function safeRemoveTab (tabId, debug, logOnSuccessEvent) {
             }
         }
         else {
+            duplicateTabsPrevented++;
             if (debug && logOnSuccessEvent) {
                 logDebug({
                     event      : logOnSuccessEvent,
@@ -116,11 +121,11 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                             keptTabId   : t.id,
                             url         : changeInfo.url,
                             mode,
-                            newTabActive: !!(tab && tab.active)
+                            newTabActive: !!(tab?.active)
                         });
                     }
 
-                    if (tab && tab.active) {
+                    if (tab?.active) {
                         // si le nouvel onglet est actif -> focaliser l'existant puis fermer le doublon
                         chrome.windows.update(t.windowId, { focused: true }, () => {
                             chrome.tabs.update(t.id, { active: true }, () => {
@@ -150,6 +155,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // bonus : on tente aussi sur creation si pendingUrl présent (cas où la créa porte déjà l'URL)
 chrome.tabs.onCreated.addListener((tab) => {
+    totalTabsOpened++
     const url = tab.pendingUrl || tab.url;
     if (!url) {
         return;
@@ -201,4 +207,14 @@ chrome.tabs.onCreated.addListener((tab) => {
             }
         });
     });
+});
+
+// Listen for popup requests for stats
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (msg && msg.type === 'getStats') {
+        sendResponse({
+            totalTabsOpened,
+            duplicateTabsPrevented
+        });
+    }
 });

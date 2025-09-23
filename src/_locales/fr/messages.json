@@ -9,10 +9,10 @@
     "message": "Empêcher les onglets doublons"
   },
   "compareMode": {
-    "message": "Mode de comparaison"
+    "message": "Mode de détection"
   },
   "modeExact": {
-    "message": "Exact (origin+path+query)"
+    "message": "Exact (origin/path?query)"
   },
   "modePath": {
     "message": "Nom d’hôte + chemin"
@@ -37,6 +37,17 @@
   },
   "title": {
     "message": "1Tab - Empêcher les onglets doublons"
+  },
+  "dupesLabel_one": {
+    "message": "$1 doublon évité",
+    "description": "Label sous le gauge pour 0 ou 1 doublon évité (français)."
+  },
+  "dupesLabel_other": {
+    "message": "$1 doublons évités",
+    "description": "Label sous le gauge pour plusieurs doublons évités (français)."
+  },
+  "totalTabsLabel": {
+    "message": "Total d'onglets ouverts : $1",
+    "description": "Label affichant le nombre total d'onglets ouverts."
   }
 }
-

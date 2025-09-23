@@ -20,5 +20,40 @@ body, .container-fluid {
   }
   .log-entry { border-bottom:1px solid #555; color:#ddd; }
   label { color: #ccc; }
+  #dupesPercent {
+    color: #bbb !important;
+  }
 }
 
+.gauge {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
+}
+.gauge-bg {
+  stroke: #e0e0e0;
+  opacity: 0.5;
+}
+.gauge-fg {
+  stroke: #0d6efd;
+  transition: stroke-dashoffset 0.7s cubic-bezier(.4,2,.3,1);
+}
+.gauge-center {
+  position: absolute;
+  top: 0; left: 0;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+#dupesPercent {
+  font-size: 2.2rem;
+  color: #0d6efd;
+}
+#totalTabs {
+  font-size: 0.95rem;
+  color: #666;
+}
