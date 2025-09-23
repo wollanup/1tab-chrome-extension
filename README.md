@@ -21,12 +21,29 @@ This extension is not yet available on the Chrome Web Store. To install it manua
 This extension automatically prevents duplicate tabs by checking for existing tabs when you open a new one. If a duplicate is found, it switches to the existing tab instead of opening a new one.
 
 ### Configuration
+
+![screenshot-fr.png](media/screenshot-fr.png)
+
 You can choose how duplicates are detected using the popup:
 - **Exact:** Only tabs with the exact same URL are considered duplicates.
 - **Domain:** Tabs with the same domain are considered duplicates.
 - **Path:** Tabs with the same domain and path are considered duplicates.
 
 Your selection is saved and used for future tab checks. Debug mode is available for troubleshooting, but not exposed in the popup yet.
+
+## Planned Features & Improvements
+
+Here are some features planned for future releases:
+- Publish the extension on the Chrome Web Store
+- Add a "Pause" button to temporarily disable duplicate tab detection
+- Display the number of duplicate tabs prevented
+- Show statistics/history of prevented duplicates
+- Allow users to whitelist or blacklist specific URLs or domains
+- Improve the popup UI/UX and add more configuration options
+- Provide a better debug/log interface for troubleshooting
+- Support for other browsers (Firefox, Edge)
+
+If you have suggestions, feel free to open an issue!
 
 ## Contributing
 
