@@ -20,6 +20,8 @@ This extension is not yet available on the Chrome Web Store. To install it manua
 
 This extension automatically prevents duplicate tabs by checking for existing tabs when you open a new one. If a duplicate is found, it switches to the existing tab instead of opening a new one.
 
+![screenshot-fr.png](media/screenshot-fr.png)
+
 ### Configuration
 
 You can choose how duplicates are detected using the popup:
@@ -33,14 +35,28 @@ Your selection is saved and used for future tab checks. Debug mode is available 
 
 A round gauge in the popup shows the number of duplicate tabs prevented since launch, the percentage, and the total number of opened tabs.
 
+### Pause Feature
+
+![Paused popup screenshot](media/paused.png)
+
+You can temporarily pause duplicate tab detection using the Pause button in the popup. When paused, the extension will not prevent duplicate tabs until you click Resume. The button clearly shows its state with a media icon and translated label. The pause state is not saved: the extension is always active on startup.
+
+## Extension Icon States
+
+The extension icon changes according to its state:
+
+| Active                                                                    | Paused                                                                           |
+|---------------------------------------------------------------------------|----------------------------------------------------------------------------------|
+| <img src="src/icons/icon48.png" alt="Active icon" width="48" height="48"> | <img src="src/icons/icon48-paused.png" alt="Paused icon" width="48" height="48"> |
+
+When paused, the icon becomes monochrome with an orange pause symbol.
+
+
 ## Planned Features & Improvements
 
 Here are some features planned for future releases:
 - Publish the extension on the Chrome Web Store
-- Add a "Pause" button to temporarily disable duplicate tab detection
-- Show statistics/history of prevented duplicates
 - Allow users to whitelist or blacklist specific URLs or domains
-- Improve the popup UI/UX and add more configuration options
 - Provide a better debug/log interface for troubleshooting
 - Support for other browsers (Firefox, Edge)
 

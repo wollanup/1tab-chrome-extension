@@ -49,5 +49,17 @@
   "totalTabsLabel": {
     "message": "Total opened tabs: $1",
     "description": "Label showing the total number of opened tabs."
+  },
+  "pause": {
+    "message": "Pause",
+    "description": "Button label to pause duplicate tab detection."
+  },
+  "resume": {
+    "message": "Resume",
+    "description": "Button label to resume duplicate tab detection."
+  },
+  "paused": {
+    "message": "Duplicate tab detection is paused.",
+    "description": "Status message when extension is paused."
   }
 }

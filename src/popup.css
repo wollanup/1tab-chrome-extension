@@ -57,3 +57,16 @@ body, .container-fluid {
   font-size: 0.95rem;
   color: #666;
 }
+.gauge.paused .gauge-bg,
+.gauge.paused .gauge-fg {
+  filter: grayscale(1) brightness(0.7);
+  opacity: 0.4;
+}
+.gauge.paused .gauge-center,
+.paused #dupesPercent,
+.paused #dupesCount,
+.paused #dupesLabel,
+.paused #totalTabs {
+  color: #aaa !important;
+  opacity: 0.6;
+}

@@ -9,6 +9,7 @@ const MAX_LOGS = 200;
 // --- Counters for stats ---
 let totalTabsOpened = 0;
 let duplicateTabsPrevented = 0;
+let extensionPaused = false;
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.local.get(['matchMode', 'debug'], (s) => {
@@ -89,6 +90,7 @@ function safeRemoveTab (tabId, debug, logOnSuccessEvent) {
 
 // quand un onglet change d'URL (c'est le meilleur moment pour détecter la cible finale)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    if (extensionPaused) return;
     // only care when there is a navigated-to URL
     if (!changeInfo.url) {
         return;
@@ -155,6 +157,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 // bonus : on tente aussi sur creation si pendingUrl présent (cas où la créa porte déjà l'URL)
 chrome.tabs.onCreated.addListener((tab) => {
+    if (extensionPaused) return;
     totalTabsOpened++
     const url = tab.pendingUrl || tab.url;
     if (!url) {
@@ -209,8 +212,37 @@ chrome.tabs.onCreated.addListener((tab) => {
     });
 });
 
-// Listen for popup requests for stats
+function setExtensionIcon(paused) {
+  if (paused) {
+    // SVG base64 for monochrome icon with orange pause (16px)
+    chrome.action.setIcon({
+      path: {
+        "16": "icons/icon16-paused.png",
+        "48": "icons/icon48-paused.png",
+        "128": "icons/icon128-paused.png"
+      }
+    });
+  } else {
+    chrome.action.setIcon({
+      path: {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+      }
+    });
+  }
+}
+
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (msg && msg.type === 'setPaused') {
+        extensionPaused = !!msg.paused;
+        setExtensionIcon(extensionPaused);
+        return;
+    }
+    if (msg && msg.type === 'getPaused') {
+        sendResponse({ paused: extensionPaused });
+        return;
+    }
     if (msg && msg.type === 'getStats') {
         sendResponse({
             totalTabsOpened,

@@ -19,6 +19,10 @@ const DEFAULTS = { matchMode: 'exact'};
 // éléments DOM
 const modeSelect = document.getElementById('mode');
 const saveBtn = document.getElementById('save');
+let paused = false;
+const pauseBtn = document.getElementById('pauseBtn');
+const pauseIcon = document.getElementById('pauseIcon');
+const pauseLabel = document.getElementById('pauseLabel');
 
 
 // -----------------------
@@ -55,8 +59,7 @@ function updateGauge(dupes, total) {
   const lang = chrome.i18n.getUILanguage();
   const pluralCategory = new Intl.PluralRules(lang).select(dupes); // e.g. 'one', 'other', 'few', etc.
   const labelKey = 'dupesLabel_' + pluralCategory;
-  const labelTemplate = chrome.i18n.getMessage(labelKey, [String(dupes)]);
-  document.getElementById('dupesLabel').textContent = labelTemplate;
+  document.getElementById('dupesLabel').textContent = chrome.i18n.getMessage(labelKey, [String(dupes)]);
 }
 
 // On popup load, request stats from background
@@ -64,4 +67,53 @@ chrome.runtime.sendMessage({ type: 'getStats' }, (res) => {
   if (res) {
     updateGauge(res.duplicateTabsPrevented || 0, res.totalTabsOpened || 0);
   }
+});
+
+// SVG icons
+const svgPause = '<svg width="20" height="20" viewBox="0 0 20 20"><rect x="4" y="4" width="4" height="12" rx="1.5" fill="currentColor"/><rect x="12" y="4" width="4" height="12" rx="1.5" fill="currentColor"/></svg>';
+const svgPlay = '<svg width="20" height="20" viewBox="0 0 20 20"><polygon points="6,4 16,10 6,16" fill="currentColor"/></svg>';
+
+function setGaugePaused(paused) {
+  const gauge = document.querySelector('.gauge');
+  const statsContainer = document.getElementById('statsContainer');
+  if (paused) {
+    gauge.classList.add('paused');
+    statsContainer.classList.add('paused');
+  } else {
+    gauge.classList.remove('paused');
+    statsContainer.classList.remove('paused');
+  }
+}
+
+function updatePauseButton() {
+  setGaugePaused(paused);
+  const pausedLabel = document.getElementById('pausedLabel');
+  if (paused) {
+    pauseIcon.innerHTML = svgPlay;
+    pauseLabel.textContent = chrome.i18n.getMessage('resume');
+    pauseBtn.classList.add('btn-outline-success');
+    pauseBtn.classList.remove('btn-outline-warning');
+    pausedLabel.textContent = chrome.i18n.getMessage('paused');
+    pausedLabel.style.display = '';
+  } else {
+    pauseIcon.innerHTML = svgPause;
+    pauseLabel.textContent = chrome.i18n.getMessage('pause');
+    pauseBtn.classList.remove('btn-outline-success');
+    pauseBtn.classList.add('btn-outline-warning');
+    pausedLabel.textContent = '';
+    pausedLabel.style.display = 'none';
+  }
+}
+
+pauseBtn.addEventListener('click', () => {
+  paused = !paused;
+  updatePauseButton();
+  chrome.runtime.sendMessage({ type: 'setPaused', paused });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  chrome.runtime.sendMessage({ type: 'getPaused' }, (res) => {
+    paused = !!(res?.paused);
+    updatePauseButton();
+  });
 });

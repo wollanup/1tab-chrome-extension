@@ -49,5 +49,17 @@
   "totalTabsLabel": {
     "message": "Total d'onglets ouverts : $1",
     "description": "Label affichant le nombre total d'onglets ouverts."
+  },
+  "pause": {
+    "message": "Pause",
+    "description": "Libellé du bouton pour mettre en pause la détection des doublons."
+  },
+  "resume": {
+    "message": "Reprendre",
+    "description": "Libellé du bouton pour reprendre la détection des doublons."
+  },
+  "paused": {
+    "message": "La détection des doublons est en pause.",
+    "description": "Message d'état lorsque l'extension est en pause."
   }
 }
