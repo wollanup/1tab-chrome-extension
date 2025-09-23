@@ -1,0 +1,28 @@
+<div class="diagonal-mix">
+    <img src="light.png" class="img-diag img-diag-bottom" alt="Image 1">
+    <img src="dark.png" class="img-diag img-diag-top" alt="Image 2">
+</div>
+<style>
+    .diagonal-mix {
+        position: relative;
+        width: 370px; /* largeur de l'image */
+        height: 570px; /* hauteur de l'image */
+        overflow: hidden;
+    }
+    .img-diag {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .img-diag-top {
+        clip-path: polygon(0 0, 100% 0, 0 100%);
+        z-index: 2;
+    }
+    .img-diag-bottom {
+        clip-path: polygon(100% 0, 100% 100%, 0 100%);
+        z-index: 1;
+    }
+
+</style>

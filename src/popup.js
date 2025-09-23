@@ -6,6 +6,7 @@ document.querySelectorAll('[id]').forEach(el => {
     if (el.tagName === "INPUT" || el.tagName === "OPTION" || el.tagName === "BUTTON") {
       el.textContent = msg;
     } else {
+        console.log(el.tagName);
       el.innerText = msg;
     }
   }
@@ -113,7 +114,16 @@ pauseBtn.addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
   chrome.runtime.sendMessage({ type: 'getPaused' }, (res) => {
-    paused = !!(res?.paused);
+    paused = !!(res && res.paused);
     updatePauseButton();
   });
+  // Traduction du lien d'aide
+  const helpLink = document.getElementById('helpLink');
+  if (helpLink) {
+    helpLink.textContent = chrome.i18n.getMessage('helpLink');
+    helpLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      chrome.tabs.create({ url: chrome.runtime.getURL('help.html') });
+    });
+  }
 });

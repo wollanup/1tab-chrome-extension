@@ -12,7 +12,8 @@
     "message": "Mode de détection"
   },
   "modeExact": {
-    "message": "Exact (origin/path?query)"
+    "message": "Exact",
+    "description": "Mode de comparaison exact"
   },
   "modePath": {
     "message": "Nom d’hôte + chemin"
@@ -61,5 +62,117 @@
   "paused": {
     "message": "La détection des doublons est en pause.",
     "description": "Message d'état lorsque l'extension est en pause."
+  },
+  "helpLink": {
+    "message": "Comment choisir ?",
+    "description": "Lien sous le select pour ouvrir la page d'aide."
+  },
+  "helpTitle": {
+    "message": "Aide - Détection des onglets doublons"
+  },
+  "helpTitleBody": {
+    "message": "Aide - Détection des onglets doublons"
+  },
+  "helpIntro": {
+    "message": "L’extension propose trois modes pour détecter les onglets doublons. Voici comment chaque mode fonctionne :"
+  },
+  "helpExactTitle": {
+    "message": "Mode exact"
+  },
+  "helpExactDesc": {
+    "message": "Les onglets sont considérés comme doublons uniquement si l’URL complète (origine/chemin?requête) est identique, en ignorant le fragment (#hash)."
+  },
+  "helpExactExample1_url1": {
+    "message": "https://www.example.com/page#section"
+  },
+  "helpExactExample1_url2": {
+    "message": "https://www.example.com/page"
+  },
+  "helpExactExample1_result": {
+    "message": "Identique (fragment ignoré)"
+  },
+  "helpExactExample2_url1": {
+    "message": "https://www.google.com/search?q=test"
+  },
+  "helpExactExample2_url2": {
+    "message": "https://www.google.com/search?q=other"
+  },
+  "helpExactExample2_result": {
+    "message": "Différent (pas doublon)"
+  },
+  "helpPathTitle": {
+    "message": "Mode chemin (par défaut)"
+  },
+  "helpPathDesc": {
+    "message": "Les onglets sont considérés comme doublons s’ils partagent le même domaine racine et le même chemin (en ignorant les sous-domaines et www)."
+  },
+  "helpPathExample1_url1": {
+    "message": "https://www.example.com/page"
+  },
+  "helpPathExample1_url2": {
+    "message": "https://blog.example.com/page"
+  },
+  "helpPathExample1_result": {
+    "message": "Identique (doublon)"
+  },
+  "helpPathExample2_url1": {
+    "message": "https://www.google.com/search?q=test"
+  },
+  "helpPathExample2_url2": {
+    "message": "https://mail.google.com/inbox"
+  },
+  "helpPathExample2_result": {
+    "message": "Différent (pas doublon)"
+  },
+  "helpDomainTitle": {
+    "message": "Mode domaine"
+  },
+  "helpDomainDesc": {
+    "message": "Les onglets sont considérés comme doublons s’ils partagent le même domaine racine (en ignorant les sous-domaines et www)."
+  },
+  "helpDomainExample1_url1": {
+    "message": "https://www.example.com"
+  },
+  "helpDomainExample1_url2": {
+    "message": "https://blog.example.com"
+  },
+  "helpDomainExample1_result": {
+    "message": "Identique (doublon)"
+  },
+  "helpDomainExample2_url1": {
+    "message": "https://www.google.com/search?q=test"
+  },
+  "helpDomainExample2_url2": {
+    "message": "https://mail.google.com/"
+  },
+  "helpDomainExample2_result": {
+    "message": "Identique (doublon)"
+  },
+  "helpNote": {
+    "message": "Vous pouvez changer le mode à tout moment dans la popup. Le mode par défaut est Chemin."
+  },
+  "exampleLabel": {
+    "message": "Exemple"
+  },
+  "url1Label": {
+    "message": "URL 1"
+  },
+  "url2Label": {
+    "message": "URL 2"
+  },
+  "resultLabel": {
+    "message": "Résultat"
+  },
+  "resultDoublon": {
+    "message": "Doublon"
+  },
+  "resultDiff": {
+    "message": "Différent"
+  },
+  "footerGithub": {
+    "message": "Github"
+  },
+  "footerDonation": {
+    "message": "Faire un don"
   }
 }

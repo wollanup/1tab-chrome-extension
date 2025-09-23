@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="">
+<head>
+    <meta charset="utf-8"/>
+    <title id="helpTitle"></title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container">
+<h1 id="helpTitleBody"></h1>
+<p id="helpIntro"></p>
+<div>
+    <h2 class="mode-title" id="helpPathTitle"></h2>
+    <div class="mode-ex" id="helpPathDesc"></div>
+    <table class="table table-bordered table-sm mb-3" id="helpPathTable">
+        <thead>
+        <tr>
+            <th></th>
+            <th id="exampleLabel1"></th>
+            <th id="exampleLabel2"></th>
+            <th id="exampleLabel3"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th id="url1Label"></th>
+            <td><code>https://<u>www.example.com</u></code></td>
+            <td><code>https://<u>www.google.com/search</u>?q=test</code></td>
+            <td><code>https://<u>www.google.com/search</u>?q=test</code></td>
+        </tr>
+        <tr>
+            <th id="url2Label"></th>
+            <td><code>https://<u>blog.example.com</u></code></td>
+            <td><code>https://<u>www.google.com/inbox</u></code></td>
+            <td><code>https://<u>www.google.com/search</u>?t=anotherTest#here</code></td>
+        </tr>
+        <tr>
+            <th id="resultLabel"></th>
+            <td><span class="badge bg-secondary" id="resultPath1"></span></td>
+            <td><span class="badge bg-secondary" id="resultPath2"></span></td>
+            <td><span class="badge bg-success" id="resultPath3"></span></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <h2 class="mode-title" id="helpExactTitle"></h2>
+    <div class="mode-ex" id="helpExactDesc"></div>
+    <table class="table table-bordered table-sm mb-3" id="helpExactTable">
+        <thead>
+        <tr>
+            <th></th>
+            <th id="exampleLabel4"></th>
+            <th id="exampleLabel5"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th id="url1LabelExact"></th>
+            <td><code>https://<u>www.example.com/page</u>#section</code></td>
+            <td><code>https://<u>www.google.com/search?q=test</u></code></td>
+        </tr>
+        <tr>
+            <th id="url2LabelExact"></th>
+            <td><code>https://<u>www.example.com/page</u></code></td>
+            <td><code>https://<u>www.google.com/search?q=other</u></code></td>
+        </tr>
+        <tr>
+            <th id="resultLabelExact"></th>
+            <td><span class="badge bg-success" id="resultExact1"></span></td>
+            <td><span class="badge bg-secondary" id="resultExact2"></span></td>
+        </tr>
+        </tbody>
+    </table>
+    <h2 class="mode-title" id="helpDomainTitle"></h2>
+    <div class="mode-ex" id="helpDomainDesc"></div>
+    <table class="table table-bordered table-sm mb-3" id="helpDomainTable">
+        <thead>
+        <tr>
+            <th></th>
+            <th id="exampleLabel6"></th>
+            <th id="exampleLabel7"></th>
+            <th id="exampleLabel8"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th id="url1LabelDomain"></th>
+            <td><code>https://www.<u>example.com</u></code></td>
+            <td><code>https://www.<u>google.com</u>/search?q=test</code></td>
+            <td><code>https://www.<u>example.com</u></code></td>
+        </tr>
+        <tr>
+            <th id="url2LabelDomain"></th>
+            <td><code>https://blog.<u>example.com</u></code></td>
+            <td><code>https://mail.<u>google.com</u></code></td>
+            <td><code>https://www.<u>example.fr</u></code></td>
+        </tr>
+        <tr>
+            <th id="resultLabelDomain"></th>
+            <td><span class="badge bg-success" id="resultDomain1"></span></td>
+            <td><span class="badge bg-success" id="resultDomain2"></span></td>
+            <td><span class="badge bg-secondary" id="resultDomain3"></span></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<p class="mt-4 text-muted" id="helpNote"></p>
+<script src="help.js"></script>
+</body>
+</html>

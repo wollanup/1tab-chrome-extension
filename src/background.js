@@ -1,6 +1,6 @@
 // background.js - version with background-tab handling
 const DEFAULTS = {
-    matchMode: 'exact',
+    matchMode: 'path', // Défaut : mode path
     debug    : false,
     debugLogs: []
 };
@@ -26,20 +26,28 @@ chrome.runtime.onInstalled.addListener(() => {
     });
 });
 
-// util pour normaliser selon le mode choisi
+/**
+ * Normalise une URL selon le mode choisi pour la détection des doublons.
+ *
+ * Modes disponibles :
+ * - 'domain' : Se base sur le domaine racine (sans sous-domaine).
+ * - 'path' : hôte + chemin .
+ * - 'exact' : hôte + chemin + paramètres (?query), sans fragment (#hash).
+ *
+ */
 function normalize (url, mode) {
     try {
         const u = new URL(url);
-        const host = u.hostname.replace(/^www\./i, '').toLowerCase();
+        const host = u.hostname.toLowerCase();
         if (mode === 'domain') {
             return host;
         }
+        const path = u.pathname.replace(/\/+$/, '').toLowerCase() || '/';
         if (mode === 'path') {
-            const p = u.pathname.replace(/\/+$/, '') || '/';
-            return `${host}${p}`.toLowerCase();
+            return `${host}${path}`.toLowerCase();
         }
         // exact: origin + pathname + search (sans fragment)
-        let s = u.origin + (u.pathname || '/');
+        let s = host + path;
         if (u.search) {
             s += u.search;
         }
