@@ -1,0 +1,24 @@
+body, .container-fluid {
+  min-width: 340px;
+  min-height: 220px; /* ajuste selon ton contenu */
+}
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1e1e1e;
+    color: #ddd;
+  }
+  select, input[type=checkbox] {
+    background: #333 !important;
+    color: #ddd !important;
+    border: 1px solid #555 !important;
+  }
+  #logs {
+    border-color: #444;
+    background: #2c2c2c;
+    color: #ddd;
+  }
+  .log-entry { border-bottom:1px solid #555; color:#ddd; }
+  label { color: #ccc; }
+}
+

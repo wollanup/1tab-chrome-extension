@@ -1,0 +1,42 @@
+{
+  "extName": {
+    "message": "1Tab (Prevent Duplicate Tabs)"
+  },
+  "extDescription": {
+    "message": "Automatically detects duplicate tabs and switches to the existing tab instead of opening a new one."
+  },
+  "popupTitle": {
+    "message": "Prevent Duplicate Tabs"
+  },
+  "compareMode": {
+    "message": "Comparison Mode"
+  },
+  "modeExact": {
+    "message": "Exact (origin+path+query)"
+  },
+  "modePath": {
+    "message": "Host + path"
+  },
+  "modeDomain": {
+    "message": "Domain only"
+  },
+  "debugLogs": {
+    "message": "Enable debug logs"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "clearLogs": {
+    "message": "Clear Logs"
+  },
+  "logsHeader": {
+    "message": "Logs (latest on top):"
+  },
+  "noLogs": {
+    "message": "No logs."
+  },
+  "title": {
+    "message": "1Tab - Prevent Duplicate Tabs"
+  }
+}
+
