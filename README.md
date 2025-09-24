@@ -49,12 +49,14 @@ If a duplicate tab is opened in the background (for example, with a middle-click
 ### Configuration
 
 You can choose how duplicates are detected using the popup:
-- **Path (default):** Tabs are considered duplicates if they share the same host and path (ignoring subdomains and www).
+- **Exact (default):** Tabs are considered duplicates only if the full URL (origin/path?query) matches, ignoring the fragment (#hash) and protocol.
+    - Example: `https://www.google.com/search?q=test` and `https://www.google.com/search?q=other` are NOT duplicates in exact mode.
+    - Example: `https://www.example.com/page#section` and `https://www.example.com/page` are duplicates in exact mode (fragment ignored).
+
+- **Path:** Tabs are considered duplicates if they share the same host and path (ignoring subdomains and www).
     - Example: `https://www.google.com/search?q=test` and `https://mail.google.com/search?q=other` are duplicates in path mode (both → google.com/search).
     - Example: `https://www.example.com/page#section` and `https://www.example.com/page` are duplicates in path mode (fragment ignored).
-- **Exact:** Tabs are considered duplicates only if the full URL (origin/path?query) matches, ignoring the fragment (#hash) and protocol.
-  - Example: `https://www.google.com/search?q=test` and `https://www.google.com/search?q=other` are NOT duplicates in exact mode.
-  - Example: `https://www.example.com/page#section` and `https://www.example.com/page` are duplicates in exact mode (fragment ignored).
+    - **WARNING: ** With this mode, you can't search for 2 différent terms on some search engines. Exclusion list may help to mitigate this issue in future releases.
 - **Domain:** Tabs are considered duplicates if they share the same root domain (ignoring subdomains and www).
   - Example: `https://www.google.com/search?q=test` and `https://mail.google.com/` are duplicates in domain mode (both → google.com).
   - Example: `https://www.example.com` and `https://blog.example.com` are duplicates in domain mode (both → example.com).
@@ -95,7 +97,7 @@ When paused, the icon becomes monochrome with an orange pause symbol.
 
 Here are some features planned for future releases:
 - Publish the extension on the Chrome Web Store
-- Allow users to whitelist or blacklist specific URLs or domains
+- Allow users to exclude specific URLs or domains
 - Provide a better debug/log interface for troubleshooting
 - Support for other browsers (Firefox ?)
 

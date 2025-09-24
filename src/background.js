@@ -1,6 +1,6 @@
 // background.js - version with background-tab handling
 const DEFAULTS = {
-    matchMode: 'path', // Default: path mode
+    matchMode: 'exact', // Default: exact mode
     debug    : false,
     debugLogs: []
 };
