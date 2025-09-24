@@ -1,9 +1,9 @@
 ![webstore-banner.png](media/webstore-banner.png)  
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/O4O2165S0Q)
 
-# 1tab-chrome-extension
+# 1Tab — Chrome Extension
 
-Automatically detects duplicate tabs and switches to the existing tab instead of opening a new one.
+1Tab is a Chrome extension that automatically detects duplicate tabs and switches to the existing tab instead of opening a new one.
 
 <!-- TOC -->
 
@@ -18,13 +18,15 @@ Automatically detects duplicate tabs and switches to the existing tab instead of
   * [Contributing](#contributing)
   * [Tests](#tests)
   * [License](#license)
-  * [Donation](#donation)
+  * [Tip](#tip)
   * [AI usage](#ai-usage)
 <!-- TOC -->
 
 ## Installation
 
-This extension is not yet available on the Chrome Web Store. To install it manually:
+### Browser compatibility
+
+This extension works with all browsers based on Chrome or Chromium that support Manifest V3 (e.g. Chrome, Edge, Brave, Opera, Vivaldi, etc).
 
 1. **Download the `.crx` file** from the [Releases](https://github.com/wollanup/1tab-chrome-extension/releases) section of this repository.
 2. Open Chrome and go to `chrome://extensions/`.
@@ -33,6 +35,8 @@ This extension is not yet available on the Chrome Web Store. To install it manua
 5. Confirm the installation.
 
 > **Note:** If Chrome shows a warning, click "Continue" or "Add extension".
+
+
 
 ## How it works & Configuration
 
@@ -109,7 +113,7 @@ Unit tests are not available yet for this extension. Testing support will be add
 
 This project is licensed under the MIT License.
 
-## Donation
+## Tip
 
 If you like this free extension, please consider buying me a beer!
 
