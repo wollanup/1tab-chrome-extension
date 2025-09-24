@@ -1,6 +1,6 @@
 body, .container-fluid {
   min-width: 340px;
-  min-height: 220px; /* ajuste selon ton contenu */
+  min-height: 220px; /* adjust according to your content */
 }
 /* Dark mode */
 @media (prefers-color-scheme: dark) {

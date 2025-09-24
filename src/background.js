@@ -1,6 +1,6 @@
 // background.js - version with background-tab handling
 const DEFAULTS = {
-    matchMode: 'path', // Défaut : mode path
+    matchMode: 'path', // Default: path mode
     debug    : false,
     debugLogs: []
 };
@@ -27,12 +27,12 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 /**
- * Normalise une URL selon le mode choisi pour la détection des doublons.
+ * Normalizes a URL according to the selected duplicate detection mode.
  *
- * Modes disponibles :
- * - 'domain' : Se base sur le domaine racine (sans sous-domaine).
- * - 'path' : hôte + chemin .
- * - 'exact' : hôte + chemin + paramètres (?query), sans fragment (#hash).
+ * Available modes:
+ * - 'domain': Based on the root domain (without subdomain).
+ * - 'path': host + path.
+ * - 'exact': host + path + parameters (?query), without fragment (#hash).
  *
  */
 function normalize (url, mode) {
@@ -46,7 +46,7 @@ function normalize (url, mode) {
         if (mode === 'path') {
             return `${host}${path}`.toLowerCase();
         }
-        // exact: origin + pathname + search (sans fragment)
+        // exact: origin + pathname + search (without fragment)
         let s = host + path;
         if (u.search) {
             s += u.search;
@@ -54,7 +54,7 @@ function normalize (url, mode) {
         return s.toLowerCase();
     }
     catch (e) {
-        // url non-std (chrome://, about:blank...) -> retourne en l'état
+        // non-standard url (chrome://, about:blank...) -> return as is
         return (url || '').toString();
     }
 }
@@ -96,7 +96,7 @@ function safeRemoveTab (tabId, debug, logOnSuccessEvent) {
     });
 }
 
-// quand un onglet change d'URL (c'est le meilleur moment pour détecter la cible finale)
+// when a tab changes its URL (this is the best moment to detect the final target)
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (extensionPaused) return;
     // only care when there is a navigated-to URL
@@ -123,7 +123,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                 }
                 const tNorm = normalize(targetUrl, mode);
                 if (tNorm === newNorm) {
-                    // trouvé : gérer selon si le nouvel onglet est actif ou en background
+                    // found: handle depending on whether the new tab is active or in background
                     if (debug) {
                         logDebug({
                             event       : 'duplicate-detected',
@@ -136,7 +136,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                     }
 
                     if (tab?.active) {
-                        // si le nouvel onglet est actif -> focaliser l'existant puis fermer le doublon
+                        // if the new tab is active -> focus the existing one then close the duplicate
                         chrome.windows.update(t.windowId, { focused: true }, () => {
                             chrome.tabs.update(t.id, { active: true }, () => {
                                 safeRemoveTab(tabId, debug, 'closed-duplicate');
@@ -144,7 +144,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                         });
                     }
                     else {
-                        // nouvel onglet en arrière-plan -> fermer juste le doublon sans activer l'existant
+                        // new tab in background -> just close the duplicate without activating the existing one
                         safeRemoveTab(tabId, debug, 'closed-background-duplicate');
                     }
 
@@ -163,7 +163,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     });
 });
 
-// bonus : on tente aussi sur creation si pendingUrl présent (cas où la créa porte déjà l'URL)
+// bonus: also try on creation if pendingUrl is present (case where creation already has the URL)
 chrome.tabs.onCreated.addListener((tab) => {
     if (extensionPaused) return;
     totalTabsOpened++
@@ -202,7 +202,7 @@ chrome.tabs.onCreated.addListener((tab) => {
                     }
 
                     if (tab.active) {
-                        // Onglet doublon actif -> focus l'existant puis fermer
+                        // Active duplicate tab -> focus the existing one then close
                         chrome.windows.update(t.windowId, { focused: true }, () => {
                             chrome.tabs.update(t.id, { active: true }, () => {
                                 safeRemoveTab(tab.id, debug, 'closed-duplicate');
@@ -210,7 +210,7 @@ chrome.tabs.onCreated.addListener((tab) => {
                         });
                     }
                     else {
-                        // Onglet doublon en arrière-plan -> fermer juste sans activer l'existant
+                        // Duplicate tab in background -> just close without activating the existing one
                         safeRemoveTab(tab.id, debug, 'closed-background-duplicate');
                     }
                     return;

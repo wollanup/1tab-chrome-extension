@@ -13,11 +13,11 @@ document.querySelectorAll('[id]').forEach(el => {
 });
 
 // -----------------------
-// constantes
+// constants
 const DEFAULTS = { matchMode: 'exact'};
 
 // -----------------------
-// éléments DOM
+// DOM elements
 const modeSelect = document.getElementById('mode');
 const saveBtn = document.getElementById('save');
 let paused = false;
@@ -27,7 +27,7 @@ const pauseLabel = document.getElementById('pauseLabel');
 
 
 // -----------------------
-// récupération des valeurs stockées au chargement
+// retrieve stored values on load
 document.addEventListener('DOMContentLoaded', () => {
   chrome.storage.local.get({ matchMode: DEFAULTS.matchMode }, (opts) => {
     modeSelect.value = opts.matchMode || DEFAULTS.matchMode;
@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // -----------------------
-// sauvegarde
+// save
 modeSelect.addEventListener('change', () => {
   const mode = modeSelect.value;
   chrome.storage.local.set({ matchMode: mode });
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     paused = !!(res && res.paused);
     updatePauseButton();
   });
-  // Traduction du lien d'aide
+  // Help link translation
   const helpLink = document.getElementById('helpLink');
   if (helpLink) {
     helpLink.textContent = chrome.i18n.getMessage('helpLink');
