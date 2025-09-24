@@ -72,6 +72,12 @@
             /*box-shadow: 0 4px 18px rgba(10,30,80,0.05);*/
             color: #0b4f9b;
         }
+        #bannerImg{
+            margin-left: 100px;
+            border-radius: 20px;
+            box-shadow: 0 4px 18px rgba(10,30,80,0.15);
+            border: 20px solid #1976d2;
+        }
 
         /* Keep background soft when banner is small */
         @media (max-width: 800px) {
@@ -102,6 +108,30 @@
             }
 
         }
+        @media (min-width: 1500px) {
+            .stage {
+                width: 1400px;
+                height: 560px;
+            }
+        }
+        @media (max-width: 540px) {
+            .stage {
+                width: 440px;
+                height: 280px;
+                padding: 24px;
+            }
+            .text {
+                font-size: 20px;
+                padding: 8px
+            }
+            .banner {
+                flex-direction: row;
+                padding: 9px;
+                height: auto
+            }
+
+
+        }
     </style>
 </head>
 <body>
@@ -110,8 +140,9 @@
         <div class="logo">
             <img src="../src/icons/icon.svg" alt="Logo 1Tab"/>
         </div>
+        <img id="bannerImg" src="" alt="Image"/>
         <div class="text" id="bannerText">
-            Automatically detects duplicate tabs and switches to the existing tab instead of opening a new one
+
         </div>
     </div>
 </div>
@@ -124,9 +155,15 @@
             return params.get(name);
         }
 
-        const defaultText = '';
-        const text = getQueryParam('text') || defaultText;
-        document.getElementById('bannerText').textContent = text;
+        const hasImg = getQueryParam('img') !== null;
+        document.getElementById('bannerText').textContent = getQueryParam('text') || '';
+        if (hasImg) {
+            document.getElementById('bannerImg').src = getQueryParam('img') || '#';
+        }
+        else {
+            //remove img tag from banner
+            document.getElementById('bannerImg').remove();
+        }
     })();
 </script>
 

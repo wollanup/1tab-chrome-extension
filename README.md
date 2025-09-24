@@ -1,4 +1,4 @@
-![banner-840x400-en.png](media/banner-840x400-en.png)  
+![webstore-banner.png](media/webstore-banner.png)  
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/O4O2165S0Q)
 
 # 1tab-chrome-extension
@@ -40,7 +40,7 @@ This extension automatically prevents duplicate tabs by checking for existing ta
 
 If a duplicate tab is opened in the background (for example, with a middle-click), it will be immediately closed by the extension.
 
-![screenshot-fr.png](media/screenshot-fr.png)
+![webstore-screenshot.png](media/webstore-screenshot.png)
 
 ### Configuration
 
