@@ -1,0 +1,22 @@
+{
+  "name": "1tab-chrome-extension",
+  "version": "2.0.0",
+  "private": true,
+  "description": "1Tab: spot and clean up duplicate tabs in Chrome. This package only holds development scripts: the extension in src/ has no dependencies and no build step.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wollanup/1tab-chrome-extension.git"
+  },
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "test:e2e": "node --test --test-concurrency=1 \"test/e2e/*.test.js\"",
+    "check": "node scripts/check.js",
+    "icons": "node scripts/build-icons.js",
+    "media": "node scripts/build-media.js"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

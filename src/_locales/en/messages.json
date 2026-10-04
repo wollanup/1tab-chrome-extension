@@ -3,52 +3,26 @@
     "message": "1Tab (Prevent Duplicate Tabs)"
   },
   "extDescription": {
-    "message": "Automatically detects duplicate tabs and switches to the existing tab instead of opening a new one."
+    "message": "Spots duplicate tabs: a badge shows when the current page is already open, and one click takes you to it or closes the copies."
   },
   "popupTitle": {
     "message": "Prevent Duplicate Tabs"
   },
   "compareMode": {
-    "message": "Detection Mode"
+    "message": "Detection mode"
   },
   "modeExact": {
-    "message": "Exact"
+    "message": "Exact page (default)"
   },
   "modePath": {
     "message": "Host + path"
   },
   "modeDomain": {
-    "message": "Domain only"
+    "message": "Host only"
   },
-  "debugLogs": {
-    "message": "Enable debug logs"
-  },
-  "save": {
-    "message": "Save"
-  },
-  "clearLogs": {
-    "message": "Clear Logs"
-  },
-  "logsHeader": {
-    "message": "Logs (latest on top):"
-  },
-  "noLogs": {
-    "message": "No logs."
-  },
-  "title": {
-    "message": "1Tab - Prevent Duplicate Tabs"
-  },
-  "dupesLabel_one": {
-    "message": "$1 duplicate prevented",
-    "description": "Label below the gauge for 1 duplicate prevented (English)."
-  },
-  "dupesLabel_other": {
-    "message": "$1 duplicates prevented",
-    "description": "Label below the gauge for 0 or multiple duplicates prevented (English)."
-  },
-  "totalTabsLabel": {
-    "message": "Total opened tabs: $1",
-    "description": "Label showing the total number of opened tabs."
+  "helpLink": {
+    "message": "How to choose?",
+    "description": "Link under the mode select to open the help page."
   },
   "pause": {
     "message": "Pause",
@@ -59,99 +33,53 @@
     "description": "Button label to resume duplicate tab detection."
   },
   "paused": {
-    "message": "Duplicate tab detection is paused.",
+    "message": "Detection is paused: no badges and no automatic switch.",
     "description": "Status message when extension is paused."
   },
-  "helpLink": {
-    "message": "How to choose?",
-    "description": "Link under the mode select to open the help page."
+  "footerGithub": {
+    "message": "GitHub"
+  },
+  "footerDonation": {
+    "message": "Tip the author"
   },
   "helpTitle": {
     "message": "Help - Duplicate Tab Detection"
   },
-  "helpTitleBody": {
-    "message": "Help - Duplicate Tab Detection"
-  },
   "helpIntro": {
-    "message": "The extension offers three modes to detect duplicate tabs. Here’s how each mode works:"
+    "message": "1Tab spots tabs showing the same page: the extension icon shows the number of copies of the current page, and the popup lists all duplicates so you can go to them or close them. Three modes decide when two pages are “the same”. In every mode, http/https, letter case of the host and a leading “www.” are ignored, while the port matters (localhost:3000 ≠ localhost:8080)."
   },
   "helpExactTitle": {
-    "message": "Exact mode"
+    "message": "Exact page (default)"
   },
   "helpExactDesc": {
-    "message": "Tabs are considered duplicates only if the full URL (origin/path?query) is identical, ignoring the fragment (#hash)."
-  },
-  "helpExactExample1_url1": {
-    "message": "https://www.example.com/page#section"
-  },
-  "helpExactExample1_url2": {
-    "message": "https://www.example.com/page"
-  },
-  "helpExactExample1_result": {
-    "message": "Duplicate (fragment ignored)"
-  },
-  "helpExactExample2_url1": {
-    "message": "https://www.google.com/search?q=test"
-  },
-  "helpExactExample2_url2": {
-    "message": "https://www.google.com/search?q=other"
-  },
-  "helpExactExample2_result": {
-    "message": "Not duplicate"
+    "message": "Same host, path and query string (case-sensitive). The order of query parameters, tracking parameters (utm_*, fbclid, gclid…) and anchors (#section) are ignored. Hash routes used by web apps (#/inbox) are compared."
   },
   "helpPathTitle": {
-    "message": "Path mode (default)"
+    "message": "Host + path"
   },
   "helpPathDesc": {
-    "message": "Tabs are considered duplicates if they share the same root domain and path (ignoring subdomains and www)."
-  },
-  "helpPathExample1_url1": {
-    "message": "https://www.example.com/page"
-  },
-  "helpPathExample1_url2": {
-    "message": "https://blog.example.com/page"
-  },
-  "helpPathExample1_result": {
-    "message": "Duplicate"
-  },
-  "helpPathExample2_url1": {
-    "message": "https://www.google.com/search?q=test"
-  },
-  "helpPathExample2_url2": {
-    "message": "https://mail.google.com/inbox"
-  },
-  "helpPathExample2_result": {
-    "message": "Not duplicate"
+    "message": "Same host and path; the query string and the hash are ignored. Warning: with this mode you cannot keep two searches open on most search engines."
   },
   "helpDomainTitle": {
-    "message": "Domain mode"
+    "message": "Host only"
   },
   "helpDomainDesc": {
-    "message": "Tabs are considered duplicates if they share the same root domain (ignoring subdomains and www)."
+    "message": "Same host: one tab per site. Subdomains other than “www” are different sites (mail.google.com ≠ www.google.com)."
   },
-  "helpDomainExample1_url1": {
-    "message": "https://www.example.com"
+  "helpBehaviorTitle": {
+    "message": "Good to know"
   },
-  "helpDomainExample1_url2": {
-    "message": "https://blog.example.com"
+  "helpBehaviorBackground": {
+    "message": "Links opened in the background (Ctrl+click, middle click) are never closed automatically: they only get the badge."
   },
-  "helpDomainExample1_result": {
-    "message": "Duplicate"
+  "helpBehaviorIgnored": {
+    "message": "Browser pages (new tab, settings, extensions…), local files and popup windows are ignored."
   },
-  "helpDomainExample2_url1": {
-    "message": "https://www.google.com/search?q=test"
-  },
-  "helpDomainExample2_url2": {
-    "message": "https://mail.google.com/"
-  },
-  "helpDomainExample2_result": {
-    "message": "Duplicate"
-  },
-  "helpNote": {
-    "message": "You can change the mode at any time in the popup. The default mode is Path."
+  "helpBehaviorIncognito": {
+    "message": "Incognito tabs are only compared with other incognito tabs."
   },
   "exampleLabel": {
-    "message": "Example"
+    "message": "Example $1"
   },
   "url1Label": {
     "message": "URL 1"
@@ -162,16 +90,64 @@
   "resultLabel": {
     "message": "Result"
   },
-  "resultDoublon": {
+  "resultDuplicate": {
     "message": "Duplicate"
   },
-  "resultDiff": {
+  "resultDifferent": {
     "message": "Different"
   },
-  "footerGithub": {
-    "message": "Github"
+  "badgeTitle": {
+    "message": "This page is open in $1 tabs"
   },
-  "footerDonation": {
-    "message": "Tip author"
+  "currentDuplicated_one": {
+    "message": "This page is also open in another tab."
+  },
+  "currentDuplicated_other": {
+    "message": "This page is also open in $1 other tabs."
+  },
+  "goToOther": {
+    "message": "Go to the other tab"
+  },
+  "closeCurrent": {
+    "message": "Close this one"
+  },
+  "duplicatesTitle": {
+    "message": "Duplicate tabs"
+  },
+  "noDuplicates": {
+    "message": "No duplicate tabs."
+  },
+  "closeAll": {
+    "message": "Close duplicates ($1)"
+  },
+  "closeCopies": {
+    "message": "Close the copies of this page"
+  },
+  "autoSwitchLabel": {
+    "message": "Switch automatically"
+  },
+  "autoSwitchHint": {
+    "message": "A page opened in the foreground that is already open closes and takes you to the existing tab."
+  },
+  "helpBehaviorAutoSwitch": {
+    "message": "Automatic switch (off by default): a new tab opened in the foreground on a page that is already open is closed and the existing tab is activated. Only new tabs are concerned (including a new tab page where you type an address): navigating inside an existing tab never closes it."
+  },
+  "helpBehaviorCleanup": {
+    "message": "When closing duplicates, the current tab is kept if it is one of them, otherwise the most recently used one. Pinned tabs are never closed."
+  },
+  "keptTag": {
+    "message": "kept"
+  },
+  "closeTab": {
+    "message": "Close this tab"
+  },
+  "settingsTitle": {
+    "message": "Settings"
+  },
+  "currentMatches_one": {
+    "message": "Another tab matches this page."
+  },
+  "currentMatches_other": {
+    "message": "$1 other tabs match this page."
   }
 }
