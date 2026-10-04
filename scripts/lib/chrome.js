@@ -68,6 +68,8 @@ export async function launchChrome ({ lang = 'en', extension = true } = {}) {
         ({ id: extensionId } = await cdp.send('Extensions.loadUnpacked', { path: EXTENSION_DIR }));
         const target = await waitFor(async () => (await targets()).find((t) => t.type === 'service_worker' && t.url.includes(extensionId)));
         worker = await attach(cdp, target.targetId);
+        // The worker target appears before its extension APIs are bound.
+        await waitFor(() => worker.evaluate('typeof chrome === "object" && !!chrome.storage'));
     }
 
     async function targets () {
