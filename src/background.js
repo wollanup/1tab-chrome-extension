@@ -14,7 +14,7 @@
  * the set of new tabs and the pause flag are kept in storage.session.
  */
 import { findOriginal, groupDuplicates, tabUrl } from './lib/duplicates.js';
-import { isComparableUrl, normalizeUrl } from './lib/normalize.js';
+import { isComparableUrl, normalizeUrl, toMatchMode } from './lib/normalize.js';
 import { getSettings, isPaused } from './lib/state.js';
 
 /** Tabs restored by the browser at startup are left alone during this delay. */
@@ -174,8 +174,13 @@ async function forgetIfLoaded (tabId) {
 // ---------- Events ----------
 
 chrome.runtime.onInstalled.addListener(() => enqueue(async () => {
-    // Writes the defaults of missing settings, and fixes invalid ones.
-    await chrome.storage.local.set(await getSettings());
+    // Missing settings need no write: getSettings() applies the defaults. Only
+    // an invalid stored mode is fixed, so that a setting changed meanwhile (e.g.
+    // from the popup) is never overwritten.
+    const { matchMode } = await chrome.storage.local.get('matchMode');
+    if (matchMode !== undefined && matchMode !== toMatchMode(matchMode)) {
+        await chrome.storage.local.set({ matchMode: toMatchMode(matchMode) });
+    }
     // Leftovers from versions < 2.0.
     await chrome.storage.local.remove(['debug', 'debugLogs']);
 }));

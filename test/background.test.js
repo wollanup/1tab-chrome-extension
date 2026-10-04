@@ -194,3 +194,28 @@ describe('auto switch', () => {
         assert.equal(browser.hasTab(tab), false);
     });
 });
+
+describe('install / update', () => {
+    it('fixes an invalid detection mode', async () => {
+        const { browser } = await startWorker({ settings: { matchMode: 'bogus' } });
+        browser.chrome.runtime.onInstalled.fire({ reason: 'update' });
+        await flush();
+        assert.equal(browser.chrome.storage.local.data.matchMode, 'exact');
+    });
+
+    it('never overwrites a setting changed meanwhile', async () => {
+        const { browser } = await startWorker();
+        browser.chrome.runtime.onInstalled.fire({ reason: 'install' });
+        await browser.chrome.storage.local.set({ autoSwitch: true });
+        await flush();
+        assert.equal(browser.chrome.storage.local.data.autoSwitch, true);
+    });
+
+    it('removes the 1.x debug settings', async () => {
+        const { browser } = await startWorker({ settings: { debug: true, debugLogs: [] } });
+        browser.chrome.runtime.onInstalled.fire({ reason: 'update' });
+        await flush();
+        assert.equal('debug' in browser.chrome.storage.local.data, false);
+        assert.equal('debugLogs' in browser.chrome.storage.local.data, false);
+    });
+});
