@@ -1,4 +1,6 @@
 .idea
 *.crx
 *.pem
-src.zip
+*.zip
+node_modules/
+dist/
