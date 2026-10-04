@@ -3,7 +3,7 @@
     "message": "1Tab (Empêcher les onglets doublons)"
   },
   "extDescription": {
-    "message": "Détecte automatiquement les doublons d’onglets et bascule vers l’onglet existant au lieu d’en ouvrir un nouveau."
+    "message": "Repère les onglets en double : un badge signale quand la page est déjà ouverte, et un clic vous y amène ou ferme les copies."
   },
   "popupTitle": {
     "message": "Empêcher les onglets doublons"
@@ -12,44 +12,17 @@
     "message": "Mode de détection"
   },
   "modeExact": {
-    "message": "Exact",
-    "description": "Mode de comparaison exact"
+    "message": "Page exacte (par défaut)"
   },
   "modePath": {
-    "message": "Nom d’hôte + chemin"
+    "message": "Hôte + chemin"
   },
   "modeDomain": {
-    "message": "Domaine seulement"
+    "message": "Hôte seulement"
   },
-  "debugLogs": {
-    "message": "Activer les logs de debug"
-  },
-  "save": {
-    "message": "Sauvegarder"
-  },
-  "clearLogs": {
-    "message": "Effacer les logs"
-  },
-  "logsHeader": {
-    "message": "Logs (dernier en haut) :"
-  },
-  "noLogs": {
-    "message": "Aucun log."
-  },
-  "title": {
-    "message": "1Tab - Empêcher les onglets doublons"
-  },
-  "dupesLabel_one": {
-    "message": "$1 doublon évité",
-    "description": "Label sous le gauge pour 0 ou 1 doublon évité (français)."
-  },
-  "dupesLabel_other": {
-    "message": "$1 doublons évités",
-    "description": "Label sous le gauge pour plusieurs doublons évités (français)."
-  },
-  "totalTabsLabel": {
-    "message": "Total d'onglets ouverts : $1",
-    "description": "Label affichant le nombre total d'onglets ouverts."
+  "helpLink": {
+    "message": "Comment choisir ?",
+    "description": "Lien sous le select pour ouvrir la page d'aide."
   },
   "pause": {
     "message": "Pause",
@@ -60,99 +33,53 @@
     "description": "Libellé du bouton pour reprendre la détection des doublons."
   },
   "paused": {
-    "message": "La détection des doublons est en pause.",
+    "message": "Détection en pause : ni badge, ni bascule automatique.",
     "description": "Message d'état lorsque l'extension est en pause."
   },
-  "helpLink": {
-    "message": "Comment choisir ?",
-    "description": "Lien sous le select pour ouvrir la page d'aide."
+  "footerGithub": {
+    "message": "GitHub"
+  },
+  "footerDonation": {
+    "message": "Pourboire"
   },
   "helpTitle": {
     "message": "Aide - Détection des onglets doublons"
   },
-  "helpTitleBody": {
-    "message": "Aide - Détection des onglets doublons"
-  },
   "helpIntro": {
-    "message": "L’extension propose trois modes pour détecter les onglets doublons. Voici comment chaque mode fonctionne :"
+    "message": "1Tab repère les onglets qui affichent la même page : l’icône de l’extension indique le nombre d’exemplaires de la page courante, et la popup liste tous les doublons pour y aller ou les fermer. Trois modes définissent quand deux pages sont « les mêmes ». Dans tous les modes, http/https, la casse de l’hôte et le « www. » initial sont ignorés, mais le port compte (localhost:3000 ≠ localhost:8080)."
   },
   "helpExactTitle": {
-    "message": "Mode exact"
+    "message": "Page exacte (par défaut)"
   },
   "helpExactDesc": {
-    "message": "Les onglets sont considérés comme doublons uniquement si l’URL complète (origine/chemin?requête) est identique, en ignorant le fragment (#hash)."
-  },
-  "helpExactExample1_url1": {
-    "message": "https://www.example.com/page#section"
-  },
-  "helpExactExample1_url2": {
-    "message": "https://www.example.com/page"
-  },
-  "helpExactExample1_result": {
-    "message": "Identique (fragment ignoré)"
-  },
-  "helpExactExample2_url1": {
-    "message": "https://www.google.com/search?q=test"
-  },
-  "helpExactExample2_url2": {
-    "message": "https://www.google.com/search?q=other"
-  },
-  "helpExactExample2_result": {
-    "message": "Différent (pas doublon)"
+    "message": "Même hôte, chemin et paramètres (sensible à la casse). L’ordre des paramètres, les paramètres de pistage (utm_*, fbclid, gclid…) et les ancres (#section) sont ignorés. Les routes d’applications web (#/inbox) sont comparées."
   },
   "helpPathTitle": {
-    "message": "Mode chemin (par défaut)"
+    "message": "Hôte + chemin"
   },
   "helpPathDesc": {
-    "message": "Les onglets sont considérés comme doublons s’ils partagent le même domaine racine et le même chemin (en ignorant les sous-domaines et www)."
-  },
-  "helpPathExample1_url1": {
-    "message": "https://www.example.com/page"
-  },
-  "helpPathExample1_url2": {
-    "message": "https://blog.example.com/page"
-  },
-  "helpPathExample1_result": {
-    "message": "Identique (doublon)"
-  },
-  "helpPathExample2_url1": {
-    "message": "https://www.google.com/search?q=test"
-  },
-  "helpPathExample2_url2": {
-    "message": "https://mail.google.com/inbox"
-  },
-  "helpPathExample2_result": {
-    "message": "Différent (pas doublon)"
+    "message": "Même hôte et même chemin ; les paramètres et l’ancre sont ignorés. Attention : avec ce mode, impossible de garder deux recherches ouvertes sur la plupart des moteurs de recherche."
   },
   "helpDomainTitle": {
-    "message": "Mode domaine"
+    "message": "Hôte seulement"
   },
   "helpDomainDesc": {
-    "message": "Les onglets sont considérés comme doublons s’ils partagent le même domaine racine (en ignorant les sous-domaines et www)."
+    "message": "Même hôte : un onglet par site. Les sous-domaines autres que « www » sont des sites différents (mail.google.com ≠ www.google.com)."
   },
-  "helpDomainExample1_url1": {
-    "message": "https://www.example.com"
+  "helpBehaviorTitle": {
+    "message": "Bon à savoir"
   },
-  "helpDomainExample1_url2": {
-    "message": "https://blog.example.com"
+  "helpBehaviorBackground": {
+    "message": "Les liens ouverts en arrière-plan (Ctrl+clic, clic molette) ne sont jamais fermés automatiquement : ils reçoivent seulement le badge."
   },
-  "helpDomainExample1_result": {
-    "message": "Identique (doublon)"
+  "helpBehaviorIgnored": {
+    "message": "Les pages du navigateur (nouvel onglet, paramètres, extensions…), les fichiers locaux et les fenêtres popup sont ignorés."
   },
-  "helpDomainExample2_url1": {
-    "message": "https://www.google.com/search?q=test"
-  },
-  "helpDomainExample2_url2": {
-    "message": "https://mail.google.com/"
-  },
-  "helpDomainExample2_result": {
-    "message": "Identique (doublon)"
-  },
-  "helpNote": {
-    "message": "Vous pouvez changer le mode à tout moment dans la popup. Le mode par défaut est Chemin."
+  "helpBehaviorIncognito": {
+    "message": "Les onglets de navigation privée ne sont comparés qu’entre eux."
   },
   "exampleLabel": {
-    "message": "Exemple"
+    "message": "Exemple $1"
   },
   "url1Label": {
     "message": "URL 1"
@@ -163,16 +90,64 @@
   "resultLabel": {
     "message": "Résultat"
   },
-  "resultDoublon": {
+  "resultDuplicate": {
     "message": "Doublon"
   },
-  "resultDiff": {
+  "resultDifferent": {
     "message": "Différent"
   },
-  "footerGithub": {
-    "message": "Github"
+  "badgeTitle": {
+    "message": "Cette page est ouverte dans $1 onglets"
   },
-  "footerDonation": {
-    "message": "Pourboire"
+  "currentDuplicated_one": {
+    "message": "Cette page est aussi ouverte dans un autre onglet."
+  },
+  "currentDuplicated_other": {
+    "message": "Cette page est aussi ouverte dans $1 autres onglets."
+  },
+  "goToOther": {
+    "message": "Aller à l’autre onglet"
+  },
+  "closeCurrent": {
+    "message": "Fermer celui-ci"
+  },
+  "duplicatesTitle": {
+    "message": "Onglets en double"
+  },
+  "noDuplicates": {
+    "message": "Aucun onglet en double."
+  },
+  "closeAll": {
+    "message": "Fermer les doublons ($1)"
+  },
+  "closeCopies": {
+    "message": "Fermer les copies de cette page"
+  },
+  "autoSwitchLabel": {
+    "message": "Basculer automatiquement"
+  },
+  "autoSwitchHint": {
+    "message": "Une page ouverte au premier plan alors qu’elle est déjà ouverte se ferme et vous amène sur l’onglet existant."
+  },
+  "helpBehaviorAutoSwitch": {
+    "message": "Bascule automatique (désactivée par défaut) : un nouvel onglet ouvert au premier plan sur une page déjà ouverte est fermé et l’onglet existant est activé. Seuls les nouveaux onglets sont concernés (y compris un nouvel onglet dans lequel vous tapez une adresse) : naviguer dans un onglet existant ne le ferme jamais."
+  },
+  "helpBehaviorCleanup": {
+    "message": "Pour fermer les doublons, l’onglet courant est conservé s’il en fait partie, sinon le plus récemment utilisé. Les onglets épinglés ne sont jamais fermés."
+  },
+  "keptTag": {
+    "message": "conservé"
+  },
+  "closeTab": {
+    "message": "Fermer cet onglet"
+  },
+  "settingsTitle": {
+    "message": "Réglages"
+  },
+  "currentMatches_one": {
+    "message": "Un autre onglet correspond à cette page."
+  },
+  "currentMatches_other": {
+    "message": "$1 autres onglets correspondent à cette page."
   }
 }

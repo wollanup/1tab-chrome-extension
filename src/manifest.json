@@ -1,12 +1,14 @@
 {
   "name": "__MSG_extName__",
   "description": "__MSG_extDescription__",
-  "version": "1.3.1",
+  "version": "2.0.0",
   "manifest_version": 3,
+  "minimum_chrome_version": "123",
   "default_locale": "en",
-  "permissions": ["tabs", "storage", "windows"],
+  "permissions": ["tabs", "storage", "favicon"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
     "default_title": "__MSG_extName__",
@@ -18,7 +20,6 @@
       "128": "icons/icon128.png"
     }
   },
-  "options_page": "popup.html",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",

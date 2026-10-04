@@ -1,260 +1,262 @@
-// background.js - version with background-tab handling
-const DEFAULTS = {
-    matchMode: 'exact', // Default: exact mode
-    debug    : false,
-    debugLogs: []
+/**
+ * 1Tab service worker.
+ *
+ * - Badge: every tab whose page is open in other tabs shows the number of
+ *   copies on the extension icon. The popup lets the user clean them up.
+ * - Auto switch (optional): a new tab opened in the foreground on a page that
+ *   is already open is closed, and the existing tab is activated instead.
+ *   Tabs opened in the background (Ctrl+click, middle click) are left alone.
+ *
+ * A tab is "new" from its creation until its first web page has finished
+ * loading (redirects included): navigating inside an existing tab never closes it.
+ *
+ * Chrome stops this worker when idle, so nothing important lives only in memory:
+ * the set of new tabs and the pause flag are kept in storage.session.
+ */
+import { findOriginal, groupDuplicates, tabUrl } from './lib/duplicates.js';
+import { isComparableUrl, normalizeUrl, toMatchMode } from './lib/normalize.js';
+import { getSettings, isPaused } from './lib/state.js';
+
+/** Tabs restored by the browser at startup are left alone during this delay. */
+const STARTUP_GRACE_MS = 10_000;
+const BADGE_REFRESH_DELAY_MS = 150;
+const BADGE_COLOR = '#d97706';
+
+const ICONS = {
+    active: { 16: 'icons/icon16.png', 32: 'icons/icon32.png', 48: 'icons/icon48.png', 128: 'icons/icon128.png' },
+    paused: { 16: 'icons/icon16-paused.png', 32: 'icons/icon32-paused.png', 48: 'icons/icon48-paused.png', 128: 'icons/icon128-paused.png' }
 };
-const MAX_LOGS = 200;
 
-// --- Counters for stats ---
-let totalTabsOpened = 0;
-let duplicateTabsPrevented = 0;
-let extensionPaused = false;
+/** Ids of tabs that are still loading their first web page. */
+const newTabs = new Set();
+let ignoreTabsUntil = 0;
 
-chrome.runtime.onInstalled.addListener(() => {
-    chrome.storage.local.get(['matchMode', 'debug'], (s) => {
-        const init = {};
-        if (s.matchMode === undefined) {
-            init.matchMode = DEFAULTS.matchMode;
+// Every tab event is handled in order, one at a time: this prevents two handlers
+// from racing on the same tabs (e.g. two new tabs closing each other).
+let queue = restoreState();
+
+/** @param {() => Promise<unknown>} task */
+function enqueue (task) {
+    queue = queue.then(task).catch((error) => console.error('[1Tab]', error));
+}
+
+async function restoreState () {
+    const { newTabs: saved } = await chrome.storage.session.get('newTabs');
+    if (Array.isArray(saved)) {
+        saved.forEach((id) => newTabs.add(id));
+    }
+    else {
+        // First run since the browser or the extension started: every tab that
+        // is not showing a web page yet (new tab page, about:blank…) is new.
+        const tabs = await chrome.tabs.query({});
+        tabs.filter((t) => !isComparableUrl(tabUrl(t))).forEach((t) => newTabs.add(t.id));
+        await saveNewTabs();
+    }
+    await chrome.action.setBadgeBackgroundColor({ color: BADGE_COLOR });
+    await chrome.action.setBadgeTextColor({ color: '#ffffff' });
+    await updateIcon(await isPaused());
+    scheduleBadgeRefresh();
+}
+
+function saveNewTabs () {
+    return chrome.storage.session.set({ newTabs: [...newTabs] });
+}
+
+/** @param {boolean} paused */
+function updateIcon (paused) {
+    return chrome.action.setIcon({ path: paused ? ICONS.paused : ICONS.active });
+}
+
+// ---------- Badges ----------
+
+/** Badge text currently shown per tab, to skip useless API calls. */
+const badgeTexts = new Map();
+let badgeTimer;
+
+function scheduleBadgeRefresh () {
+    clearTimeout(badgeTimer);
+    badgeTimer = setTimeout(() => refreshBadges().catch((error) => console.error('[1Tab]', error)), BADGE_REFRESH_DELAY_MS);
+}
+
+async function refreshBadges () {
+    const [{ matchMode }, paused, windows] = await Promise.all([
+        getSettings(),
+        isPaused(),
+        chrome.windows.getAll({ populate: true, windowTypes: ['normal'] })
+    ]);
+    const tabs = windows.flatMap((w) => w.tabs ?? []);
+
+    /** @type {Map<number, number>} */
+    const copies = new Map();
+    if (!paused) {
+        for (const group of groupDuplicates(tabs, matchMode)) {
+            group.forEach((t) => copies.set(t.id, group.length));
         }
-        if (s.debug === undefined) {
-            init.debug = DEFAULTS.debug;
-        }
-        if (Object.keys(init).length) {
-            chrome.storage.local.set(init);
-        }
-    });
-});
+    }
+    await Promise.all(tabs.map((t) => setBadge(t.id, copies.get(t.id) ?? 0)));
+}
 
 /**
- * Normalizes a URL according to the selected duplicate detection mode.
- *
- * Available modes:
- * - 'domain': Based on the root domain (without subdomain).
- * - 'path': host + path.
- * - 'exact': host + path + parameters (?query), without fragment (#hash).
- *
+ * @param {number} tabId
+ * @param {number} copies  number of tabs showing this page, 0 when not a duplicate
  */
-function normalize (url, mode) {
-    try {
-        const u = new URL(url);
-        const host = u.hostname.toLowerCase();
-        if (mode === 'domain') {
-            return host;
-        }
-        const path = u.pathname.replace(/\/+$/, '').toLowerCase() || '/';
-        if (mode === 'path') {
-            return `${host}${path}`.toLowerCase();
-        }
-        // exact: origin + pathname + search (without fragment)
-        let s = host + path;
-        if (u.search) {
-            s += u.search;
-        }
-        return s.toLowerCase();
+async function setBadge (tabId, copies) {
+    const text = copies ? String(copies) : '';
+    if (badgeTexts.get(tabId) === text) {
+        return;
     }
-    catch (e) {
-        // non-standard url (chrome://, about:blank...) -> return as is
-        return (url || '').toString();
+    badgeTexts.set(tabId, text);
+    const title = copies
+        ? chrome.i18n.getMessage('badgeTitle', [String(copies)])
+        : chrome.i18n.getMessage('extName');
+    await Promise.all([
+        chrome.action.setBadgeText({ tabId, text }),
+        chrome.action.setTitle({ tabId, title })
+    ]).catch(() => badgeTexts.delete(tabId)); // tab closed in the meantime
+}
+
+// ---------- Auto switch ----------
+
+/**
+ * Closes a new foreground tab if its page is already open, and switches to the
+ * existing tab.
+ *
+ * @param {number} tabId
+ */
+async function switchIfDuplicate (tabId) {
+    if (Date.now() < ignoreTabsUntil || await isPaused()) {
+        return;
     }
-}
-
-function logDebug (entry) {
-    entry.ts = new Date().toISOString();
-    chrome.storage.local.get({ debugLogs: [] }, (res) => {
-        const arr = res.debugLogs || [];
-        arr.unshift(entry);
-        if (arr.length > MAX_LOGS) {
-            arr.splice(MAX_LOGS);
-        }
-        chrome.storage.local.set({ debugLogs: arr });
-    });
-    console.log('[PreventDuplicateTabs]', entry);
-}
-
-// Helper: close a tab and optionally log result
-function safeRemoveTab (tabId, debug, logOnSuccessEvent) {
-    chrome.tabs.remove(tabId, () => {
-        if (chrome.runtime.lastError) {
-            if (debug) {
-                logDebug({
-                    event: 'error-closing',
-                    error: chrome.runtime.lastError.message,
-                    tabId
-                });
-            }
-        }
-        else {
-            duplicateTabsPrevented++;
-            if (debug && logOnSuccessEvent) {
-                logDebug({
-                    event      : logOnSuccessEvent,
-                    closedTabId: tabId
-                });
-            }
-        }
-    });
-}
-
-// when a tab changes its URL (this is the best moment to detect the final target)
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (extensionPaused) return;
-    // only care when there is a navigated-to URL
-    if (!changeInfo.url) {
+    const { matchMode, autoSwitch } = await getSettings();
+    if (!autoSwitch) {
         return;
     }
 
-    chrome.storage.local.get({
-        matchMode: DEFAULTS.matchMode,
-        debug    : DEFAULTS.debug
-    }, (opts) => {
-        const mode = opts.matchMode || DEFAULTS.matchMode;
-        const debug = !!opts.debug;
-        const newNorm = normalize(changeInfo.url, mode);
+    const tab = await chrome.tabs.get(tabId).catch(() => undefined);
+    // Background tabs (Ctrl+click, middle click) are only flagged by the badge.
+    if (!tab?.active || !isComparableUrl(tabUrl(tab))) {
+        return;
+    }
 
-        chrome.tabs.query({}, (tabs) => {
-            for (const t of tabs) {
-                if (!t || t.id === tabId) {
-                    continue;
-                }
-                const targetUrl = t.url || t.pendingUrl;
-                if (!targetUrl) {
-                    continue;
-                }
-                const tNorm = normalize(targetUrl, mode);
-                if (tNorm === newNorm) {
-                    // found: handle depending on whether the new tab is active or in background
-                    if (debug) {
-                        logDebug({
-                            event       : 'duplicate-detected',
-                            newTabId    : tabId,
-                            keptTabId   : t.id,
-                            url         : changeInfo.url,
-                            mode,
-                            newTabActive: !!(tab?.active)
-                        });
-                    }
+    // Popups, apps and devtools windows are never touched nor used as originals.
+    const windows = await chrome.windows.getAll({ populate: true, windowTypes: ['normal'] });
+    if (!windows.some((w) => w.id === tab.windowId)) {
+        return;
+    }
 
-                    if (tab?.active) {
-                        // if the new tab is active -> focus the existing one then close the duplicate
-                        chrome.windows.update(t.windowId, { focused: true }, () => {
-                            chrome.tabs.update(t.id, { active: true }, () => {
-                                safeRemoveTab(tabId, debug, 'closed-duplicate');
-                            });
-                        });
-                    }
-                    else {
-                        // new tab in background -> just close the duplicate without activating the existing one
-                        safeRemoveTab(tabId, debug, 'closed-background-duplicate');
-                    }
+    const tabs = windows.flatMap((w) => w.tabs ?? []);
+    const original = findOriginal(tab, tabs, matchMode, (id) => newTabs.has(id));
+    if (!original) {
+        return;
+    }
 
-                    return; // stop loop
-                }
-            }
-            if (debug) {
-                logDebug({
-                    event: 'no-duplicate-found',
-                    tabId,
-                    url  : changeInfo.url,
-                    mode
-                });
-            }
-        });
-    });
+    console.debug('[1Tab] switch to existing tab', { key: normalizeUrl(tabUrl(tab), matchMode), closed: tab.id, kept: original.id });
+    await chrome.tabs.update(original.id, { active: true });
+    if (original.windowId !== tab.windowId) {
+        await chrome.windows.update(original.windowId, { focused: true });
+    }
+    await chrome.tabs.remove(tab.id);
+}
+
+/**
+ * A tab stops being new once its first web page has finished loading.
+ *
+ * @param {number} tabId
+ */
+async function forgetIfLoaded (tabId) {
+    const tab = await chrome.tabs.get(tabId).catch(() => undefined);
+    if (tab?.status === 'complete' && isComparableUrl(tab.url)) {
+        newTabs.delete(tabId);
+        await saveNewTabs();
+    }
+}
+
+// ---------- Events ----------
+
+chrome.runtime.onInstalled.addListener(() => enqueue(async () => {
+    // Missing settings need no write: getSettings() applies the defaults. Only
+    // an invalid stored mode is fixed, so that a setting changed meanwhile (e.g.
+    // from the popup) is never overwritten.
+    const { matchMode } = await chrome.storage.local.get('matchMode');
+    if (matchMode !== undefined && matchMode !== toMatchMode(matchMode)) {
+        await chrome.storage.local.set({ matchMode: toMatchMode(matchMode) });
+    }
+    // Leftovers from versions < 2.0.
+    await chrome.storage.local.remove(['debug', 'debugLogs']);
+}));
+
+chrome.runtime.onStartup.addListener(() => {
+    ignoreTabsUntil = Date.now() + STARTUP_GRACE_MS;
 });
 
-// bonus: also try on creation if pendingUrl is present (case where creation already has the URL)
 chrome.tabs.onCreated.addListener((tab) => {
-    if (extensionPaused) return;
-    totalTabsOpened++
-    const url = tab.pendingUrl || tab.url;
-    if (!url) {
-        return;
-    }
-
-    chrome.storage.local.get({
-        matchMode: DEFAULTS.matchMode,
-        debug    : DEFAULTS.debug
-    }, (opts) => {
-        const mode = opts.matchMode || DEFAULTS.matchMode;
-        const debug = !!opts.debug;
-        const newNorm = normalize(url, mode);
-
-        chrome.tabs.query({}, (tabs) => {
-            for (const t of tabs) {
-                if (!t || t.id === tab.id) {
-                    continue;
-                }
-                const targetUrl = t.url || t.pendingUrl;
-                if (!targetUrl) {
-                    continue;
-                }
-                if (normalize(targetUrl, mode) === newNorm) {
-                    if (debug) {
-                        logDebug({
-                            event       : 'duplicate-on-created',
-                            newTabId    : tab.id,
-                            keptTabId   : t.id,
-                            url,
-                            mode,
-                            newTabActive: !!tab.active
-                        });
-                    }
-
-                    if (tab.active) {
-                        // Active duplicate tab -> focus the existing one then close
-                        chrome.windows.update(t.windowId, { focused: true }, () => {
-                            chrome.tabs.update(t.id, { active: true }, () => {
-                                safeRemoveTab(tab.id, debug, 'closed-duplicate');
-                            });
-                        });
-                    }
-                    else {
-                        // Duplicate tab in background -> just close without activating the existing one
-                        safeRemoveTab(tab.id, debug, 'closed-background-duplicate');
-                    }
-                    return;
-                }
-            }
-        });
+    // Registered right away (not in the queue): a tab being checked must already
+    // see the tabs opened just after it as new.
+    newTabs.add(tab.id);
+    scheduleBadgeRefresh();
+    enqueue(async () => {
+        await saveNewTabs();
+        if (isComparableUrl(tabUrl(tab))) {
+            await switchIfDuplicate(tab.id);
+        }
     });
 });
 
-function setExtensionIcon(paused) {
-  if (paused) {
-    // SVG base64 for monochrome icon with orange pause (16px)
-    chrome.action.setIcon({
-      path: {
-        "16": "icons/icon16-paused.png",
-        "48": "icons/icon48-paused.png",
-        "128": "icons/icon128-paused.png"
-      }
+chrome.tabs.onUpdated.addListener((tabId, change) => {
+    if (!change.url && change.status !== 'complete') {
+        return;
+    }
+    scheduleBadgeRefresh();
+    enqueue(async () => {
+        if (!newTabs.has(tabId)) {
+            return;
+        }
+        if (change.url && isComparableUrl(change.url)) {
+            await switchIfDuplicate(tabId);
+        }
+        if (change.status === 'complete') {
+            await forgetIfLoaded(tabId);
+        }
     });
-  } else {
-    chrome.action.setIcon({
-      path: {
-        "16": "icons/icon16.png",
-        "48": "icons/icon48.png",
-        "128": "icons/icon128.png"
-      }
-    });
-  }
-}
+});
 
-chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-    if (msg && msg.type === 'setPaused') {
-        extensionPaused = !!msg.paused;
-        setExtensionIcon(extensionPaused);
-        return;
+// Chrome swaps in a prerendered tab when a URL typed in the omnibox was
+// prerendered: no onCreated/onUpdated is fired for it.
+chrome.tabs.onReplaced.addListener((addedTabId, removedTabId) => {
+    scheduleBadgeRefresh();
+    enqueue(async () => {
+        if (!newTabs.delete(removedTabId)) {
+            return;
+        }
+        newTabs.add(addedTabId);
+        await saveNewTabs();
+        await switchIfDuplicate(addedTabId);
+        await forgetIfLoaded(addedTabId);
+    });
+});
+
+chrome.tabs.onRemoved.addListener((tabId) => {
+    badgeTexts.delete(tabId);
+    scheduleBadgeRefresh();
+    enqueue(async () => {
+        if (newTabs.delete(tabId)) {
+            await saveNewTabs();
+        }
+    });
+});
+
+// A tab moved between a popup window and a normal window.
+chrome.tabs.onAttached.addListener(scheduleBadgeRefresh);
+
+chrome.storage.session.onChanged.addListener((changes) => {
+    if (changes.paused) {
+        updateIcon(!!changes.paused.newValue);
+        scheduleBadgeRefresh();
     }
-    if (msg && msg.type === 'getPaused') {
-        sendResponse({ paused: extensionPaused });
-        return;
-    }
-    if (msg && msg.type === 'getStats') {
-        sendResponse({
-            totalTabsOpened,
-            duplicateTabsPrevented
-        });
+});
+
+chrome.storage.local.onChanged.addListener((changes) => {
+    if (changes.matchMode) {
+        scheduleBadgeRefresh();
     }
 });

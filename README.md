@@ -1,22 +1,19 @@
-![webstore-banner.png](media/webstore-banner.png)  
+![1Tab](media/store/promo-marquee-en.png)
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/O4O2165S0Q)
 
 # 1Tab — Chrome Extension
 
-1Tab is a Chrome extension that automatically detects duplicate tabs and switches to the existing tab instead of opening a new one.
+1Tab is a Chrome extension that spots duplicate tabs: a badge on its icon tells you when the current page is already open in another tab, and the popup takes you to it or closes the copies in one click.
 
 <!-- TOC -->
-
   * [Installation](#installation)
   * [How it works & Configuration](#how-it-works--configuration)
-    * [Configuration](#configuration)
-    * [Statistics](#statistics)
+    * [Detection modes](#detection-modes)
+    * [Automatic switch](#automatic-switch)
     * [Pause](#pause)
-      * [Extension Icon States](#extension-icon-states)
     * [Theme](#theme)
   * [Planned Features & Improvements](#planned-features--improvements)
   * [Contributing](#contributing)
-  * [Tests](#tests)
   * [License](#license)
   * [Tip](#tip)
   * [AI usage](#ai-usage)
@@ -24,82 +21,58 @@
 
 ## Installation
 
-### Browser compatibility
+Works with Chrome 123+ and other Chromium browsers (Edge, Brave, Opera, Vivaldi…).
 
-This extension works with all browsers based on Chrome or Chromium that support Manifest V3 (e.g. Chrome, Edge, Brave, Opera, Vivaldi, etc).
-
-1. **Download the `.crx` file** from the [Releases](https://github.com/wollanup/1tab-chrome-extension/releases) section of this repository.
-2. Open Chrome and go to `chrome://extensions/`.
-3. Enable **Developer mode** (top right corner).
-4. Drag and drop the `.crx` file onto the extensions page.
-5. Confirm the installation.
-
-> **Note:** If Chrome shows a warning, click "Continue" or "Add extension".
-
-
+1. Download the `.zip` file from the [Releases](https://github.com/wollanup/1tab-chrome-extension/releases) section and unzip it.
+2. Open `chrome://extensions/` and enable **Developer mode** (top right corner).
+3. Click **Load unpacked** and select the unzipped folder.
 
 ## How it works & Configuration
 
-This extension automatically prevents duplicate tabs by checking for existing tabs when you open a new one. If a duplicate is found, it switches to the existing tab instead of opening a new one.
+When the current page is also open in other tabs, the extension icon shows the number of copies. Open the popup to go to the other tab, close this one, or close all duplicates at once (the current tab and pinned tabs are kept).
 
-If a duplicate tab is opened in the background (for example, with a middle-click), it will be immediately closed by the extension.
+![webstore-screenshot](media/store/screenshot-1-en.png)
 
-![webstore-screenshot.png](media/webstore-screenshot.png)
+### Detection modes
 
-### Configuration
+Choose in the popup settings how tabs are compared. `http`/`https` and `www.` are always ignored.
 
-You can choose how duplicates are detected using the popup:
-- **Exact (default):** Tabs are considered duplicates only if the full URL (origin/path?query) matches, ignoring the fragment (#hash) and protocol.
-    - Example: `https://www.google.com/search?q=test` and `https://www.google.com/search?q=other` are NOT duplicates in exact mode.
-    - Example: `https://www.example.com/page#section` and `https://www.example.com/page` are duplicates in exact mode (fragment ignored).
+- **Exact page (default):** same address, ignoring the anchor (`#section`) and tracking parameters (`utm_*`, `fbclid`…).
+  - `google.com/search?q=test` and `google.com/search?q=other` are different.
+- **Host + path:** same site and path, whatever the parameters.
+  - `google.com/search?q=test` and `google.com/search?q=other` are duplicates.
+- **Host only:** one tab per site.
+  - `example.com` and `example.com/about` are duplicates, `blog.example.com` is a different site.
 
-- **Path:** Tabs are considered duplicates if they share the same host and path (ignoring subdomains and www).
-    - Example: `https://www.google.com/search?q=test` and `https://mail.google.com/search?q=other` are duplicates in path mode (both → google.com/search).
-    - Example: `https://www.example.com/page#section` and `https://www.example.com/page` are duplicates in path mode (fragment ignored).
-    - **WARNING: ** With this mode, you can't search for 2 différent terms on some search engines. Exclusion list may help to mitigate this issue in future releases.
-- **Domain:** Tabs are considered duplicates if they share the same root domain (ignoring subdomains and www).
-  - Example: `https://www.google.com/search?q=test` and `https://mail.google.com/` are duplicates in domain mode (both → google.com).
-  - Example: `https://www.example.com` and `https://blog.example.com` are duplicates in domain mode (both → example.com).
+In host modes, unfold a group in the popup to see its tabs.
 
+![webstore-screenshot-2](media/store/screenshot-2-en.png)
 
-> **Note:**
-> - The term "domain" refers to the root domain (e.g. `example.com`), not the full host (which may include subdomains).
-> - The term "path" refers to the part after the domain, e.g. `/search` in `google.com/search`.
-> - "Exact" mode uses the host, path, and query string, but ignores the fragment (#hash).
-> **Default mode:**
-> The extension uses **Path** mode by default. Tabs are considered duplicates if they share the same root domain and path (ignoring subdomains and www). You can change this in the popup at any time.
+### Automatic switch
 
-### Statistics
-
-A round gauge in the popup shows the number of duplicate tabs prevented since launch, the percentage, and the total number of opened tabs.
+Off by default. When enabled in the popup settings, opening a page that is already open in a new foreground tab takes you to the existing tab instead. Links opened in the background (Ctrl+click, middle click) are never closed, and navigating inside a tab never closes it.
 
 ### Pause
 
-| ![Paused popup screenshot](media/paused.png) | You can temporarily pause duplicate tab detection using the Pause button in the popup.<br>When paused, the extension will not prevent duplicate tabs until you click Resume or restart the browser. |
-|----------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-
-#### Extension Icon States
+| ![Paused popup](media/popup-paused-en.png) | You can pause duplicate detection with the Pause button in the popup.<br>When paused, there are no badges and no automatic switch until you click Resume or restart the browser. |
+|---|---|
 
 The extension icon changes according to its state:
 
-| Active                                                                    | Paused                                                                           |
-|---------------------------------------------------------------------------|----------------------------------------------------------------------------------|
+| Active | Paused |
+|---|---|
 | <img src="src/icons/icon48.png" alt="Active icon" width="48" height="48"> | <img src="src/icons/icon48-paused.png" alt="Paused icon" width="48" height="48"> |
 
-When paused, the icon becomes monochrome with an orange pause symbol.
 ### Theme
 
-| ![dark-light.png](media/dark-light.png) | Automatic dark/light theme detection is available, based on browser and OS preferences. |
-|-----------------------------------------|-----------------------------------------------------------------------------------------|
-
+| ![Light and dark themes](media/popup-light-dark-en.png) | The popup follows the light or dark theme of your browser and OS. |
+|---|---|
 
 ## Planned Features & Improvements
 
-Here are some features planned for future releases:
 - Publish the extension on the Chrome Web Store
 - Allow users to exclude specific URLs or domains
-- Provide a better debug/log interface for troubleshooting
-- Support for other browsers (Firefox ?)
+- Support for other browsers (Firefox?)
 
 If you have suggestions, feel free to open an issue!
 
@@ -107,13 +80,18 @@ If you have suggestions, feel free to open an issue!
 
 Contributions are welcome! Feel free to open an issue or submit a pull request.
 
-## Tests
+The extension has no dependencies and no build step: load the `src/` folder with **Load unpacked**. With Node.js 22+:
 
-Unit tests are not available yet for this extension. Testing support will be added in future releases.
+```bash
+npm test             # unit tests
+npm run test:e2e     # end-to-end tests in headless Chrome
+npm run check        # manifest and translations
+npm run media        # regenerate the screenshots
+```
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License. 1Tab collects no data, see [PRIVACY.md](PRIVACY.md).
 
 ## Tip
 
@@ -123,4 +101,4 @@ If you like this free extension, please consider buying me a beer!
 
 ## AI usage
 
-This extension was originally a personal project. Some parts of the code were written with the help of GitHub Copilot and ChatGPT, which assisted in code generation, refactoring, and documentation.
+This extension was originally a personal project. Some parts of the code were written with the help of GitHub Copilot, ChatGPT and Claude Code, which assisted in code generation, refactoring and documentation.
