@@ -1,6 +1,6 @@
 /**
- * Generates the README screenshots and the Chrome Web Store images from the
- * real popup, with headless Chrome:
+ * Generates the README images and the Chrome Web Store images from the real
+ * popup, with headless Chrome:
  *
  *   npm run media
  *
@@ -174,6 +174,16 @@ function screenshotHtml ({ title, text, popup, tabs, url, badge }) {
     </div></body></html>`;
 }
 
+/** Two captures of the same size, the second one drawn over the top-left half. */
+function diagonalHtml (bottom, top) {
+    return `<!doctype html><html><head><style>
+        body { margin: 0; }
+        div { position: relative; width: 100vw; height: 100vh; }
+        img { position: absolute; inset: 0; width: 100%; height: 100%; }
+        img + img { clip-path: polygon(0 0, 100% 0, 0 100%); }
+    </style></head><body><div><img src="${dataUri('image/png', bottom)}" alt=""><img src="${dataUri('image/png', top)}" alt=""></div></body></html>`;
+}
+
 /** A promotional tile: logo, name and tagline. */
 function promoHtml ({ tagline, scale }) {
     return `<!doctype html><html><head><meta charset="utf-8"><style>${BASE_CSS}
@@ -216,9 +226,10 @@ for (const lang of ['en', 'fr']) {
 
         // 1. Exact mode: the current page is open twice.
         const light = await capturePopup(chrome);
-        write(MEDIA_DIR, `popup-${lang}.png`, light.png);
         if (lang === 'en') {
-            write(MEDIA_DIR, 'popup-en-dark.png', (await capturePopup(chrome, { dark: true })).png);
+            const dark = await capturePopup(chrome, { dark: true });
+            // Light and dark themes, split along the diagonal.
+            write(MEDIA_DIR, 'popup-light-dark-en.png', await renderHtml(chrome, diagonalHtml(light.png, dark.png), 720, light.height * 2));
         }
         const t = TEXT[lang];
         write(STORE_DIR, `screenshot-1-${lang}.png`, await renderHtml(chrome, screenshotHtml({
@@ -231,11 +242,18 @@ for (const lang of ['en', 'fr']) {
         const expanded = await capturePopup(chrome, {
             before: `[...document.querySelectorAll('.group-title')].find((el) => el.textContent.includes('mozilla'))?.closest('.group-link').click()`
         });
-        write(MEDIA_DIR, `popup-expanded-${lang}.png`, expanded.png);
         write(STORE_DIR, `screenshot-2-${lang}.png`, await renderHtml(chrome, screenshotHtml({
             title: t.shot2Title, text: t.shot2Text, popup: dataUri('image/png', expanded.png), tabs: tabStrip(), url: PAGES.mdnMap.url.replace('https://', ''), badge: 4
         }), 1280, 800));
         await chrome.worker.evaluate(`chrome.storage.local.set({ matchMode: 'exact' })`);
+
+        if (lang === 'en') {
+            const paused = await capturePopup(chrome, {
+                before: `document.getElementById('pauseBtn').click(); new Promise((done) => setTimeout(done, 300))`
+            });
+            write(MEDIA_DIR, 'popup-paused-en.png', paused.png);
+            await chrome.worker.evaluate('chrome.storage.session.set({ paused: false })');
+        }
 
         // Promotional tiles (Chrome Web Store sizes).
         write(STORE_DIR, `promo-small-${lang}.png`, await renderHtml(chrome, promoHtml({ tagline: t.tagline, scale: 0.42 }), 440, 280));
